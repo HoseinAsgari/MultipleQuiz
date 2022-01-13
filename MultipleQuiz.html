@@ -1,0 +1,231 @@
+<html lang="en" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ضرب</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            justify-content: center;
+        }
+
+        input {
+            width: 70px;
+        }
+
+        .main {
+            border: pink 3px solid;
+            border-radius: 20px;
+            padding: 30px;
+            justify-content: center;
+        }
+
+        .inputs {
+            justify-content: center;
+            width: 100%;
+            display: block;
+        }
+
+        #answer {
+            display: none;
+        }
+
+        #question {
+            margin: 20px 0;
+        }
+
+        .result span {
+            display: none;
+        }
+
+        #correct {
+            color: green;
+        }
+
+        #incorrect {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <h3>نمره: <span id="score">0</span></h3>
+        <div class="inputs">
+            <b>از عدد</b>
+            <input id="from-num" type="number">
+            <b>تا عدد</b>
+            <input id="to-num" type="number">
+        </div>
+        <div id="question">
+            <button onclick="createRandomMultiple(this)">ازم بپرس!!!</button>
+        </div>
+        <div id="answer">
+            <input id="answer-input" type="number">
+            <button onclick="checkAnswer()">چک کن!!</button>
+        </div>
+        <div class="result">
+            <span id="correct">آفرین پاسخ درسته!!!</span>
+            <span id="incorrect">جوابت اشتباهه. جواب میشه: <b id="correct-answer"></b></span>
+        </div>
+        <hr>
+        <button onclick="showIncorrectAnswers()">غلط هام رو نشون بده</button>
+        <br>
+        <br>
+        <button onclick="solveWrongs()">رفع اشکال</button>
+    </div>
+    <script>
+        var incorrects = [];
+        var fromNum = 0;
+        var toNum = 10;
+        var correctAnswer = 0;
+        var answerd = false;
+        var num1 = 0;
+        var num2 = 0;
+        var isSolvingWrongs = false;
+        var wrongsSolvedCount = 0;
+
+        function setVars() {
+            fromNum = parseInt(document.getElementById('from-num').value);
+            toNum = parseInt(document.getElementById('to-num').value);
+        }
+
+        function createRandomMultiple(caller) {
+            if (!isSolvingWrongs || wrongsSolvedCount + 1 == incorrects.length) {
+                isSolvingWrongs = false;
+                setVars();
+                num1 = createFirstNum();
+                num2 = randomInt(fromNum, toNum);
+            }
+            else {
+                num1 = incorrects[wrongsSolvedCount].number1;
+                num2 = incorrects[wrongsSolvedCount].number2;
+                wrongsSolvedCount++;
+            }
+            caller.style.display = 'none';
+            correctAnswer = num1 * num2;
+            showQuestion();
+            showAnswerTxtbox();
+        }
+
+        function createFirstNum() {
+            var randNum = randomInt(3, 9);
+            if (randNum == 3) {
+                if (Math.random() <= 0.5)
+                    randNum = randomInt(3, 9);
+            }
+            else if (randNum == 4) {
+                if (Math.random() <= 0.25)
+                    randNum = randomInt(3, 9);
+            }
+            else if (randNum == 5) {
+                if (Math.random() <= 0.125)
+                    randNum = randomInt(3, 9);
+            }
+            return randNum;
+        }
+
+        function showQuestion() {
+            var question = document.getElementById('question');
+            question.innerHTML = '<b>پاسخ ' + num1 + ' ضرب در ' + num2 + ' چند میشه؟؟</b>';
+        }
+
+        function showAnswerTxtbox() {
+            let answerTxtBox = document.getElementById('answer');
+            answerTxtBox.style.display = 'block';
+        }
+
+        function randomInt(from, to) {
+            return Math.floor(Math.random() * (to - from + 1)) + from;
+        }
+
+        function checkAnswer() {
+            if (!answerd) {
+                var answerTxtBox = document.getElementById('answer-input');
+                if (answerTxtBox.value == NaN || !isInt(answerTxtBox.value)) {
+                    return false;
+                }
+                if (correctAnswer == answerTxtBox.value) {
+                    showWasCorrect();
+                }
+                else
+                    showWasIncorrect();
+                answerd = true;
+                setTimeout(reset, 2500)
+            }
+        }
+
+        function isInt(value) {
+            return !isNaN(value) &&
+                parseInt(Number(value)) == value &&
+                !isNaN(parseInt(value, 10));
+        }
+
+        function solveWrongs() {
+            if (incorrects.length == 0) {
+                alert('تا الان اشتباهی نداشتی.');
+                return;
+            }
+            isSolvingWrongs = true;
+            wrongsSolvedCount = 0;
+            showQuestion();
+            showAnswerTxtbox();
+        }
+
+        function showWasCorrect() {
+            var correct = document.getElementById('correct');
+            correct.style.display = "block";
+            addScore();
+        }
+
+        function showWasIncorrect() {
+            var correctAnswerTag = document.getElementById('correct-answer');
+            correctAnswerTag.innerText = correctAnswer;
+            var incorrect = document.getElementById('incorrect');
+            incorrect.style.display = "block";
+            minScore();
+            incorrects.push({ number1: num1, number2: num2 });
+        }
+
+        function addScore() {
+            let scoreElement = document.getElementById('score');
+            scoreElement.innerText = parseInt(scoreElement.innerText) + 1;
+        }
+
+        function minScore() {
+            let scoreElement = document.getElementById('score');
+            scoreElement.innerText = parseInt(scoreElement.innerText) - 1;
+        }
+
+        function reset() {
+            var incorrect = document.getElementById('incorrect');
+            incorrect.style.display = "none";
+            var correct = document.getElementById('correct');
+            correct.style.display = "none";
+            var answer = document.getElementById('answer');
+            answer.style.display = "none";
+            var question = document.getElementById('question');
+            question.innerHTML = '<button onclick="createRandomMultiple(this)">ازم بپرس!!!</button>';
+            document.getElementById('answer-input').value = '';
+            answerd = false;
+        }
+
+        function showIncorrectAnswers() {
+            if (incorrects.length == 0) {
+                alert('تا الان اشتباهی نداشتی.');
+                return;
+            }
+            var listNums = '';
+            incorrects.forEach(element => {
+                listNums += element.number1 + ' ضرب در ' + element.number2 + '\n';
+            });
+            alert(listNums);
+        }
+    </script>
+</body>
+
+</html>
