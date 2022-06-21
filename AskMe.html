@@ -18,7 +18,7 @@
         }
 
         .main {
-            border: pink 3px solid;
+            border: rgb(0, 105, 0) 3px solid;
             border-radius: 20px;
             padding: 30px;
             justify-content: center;
@@ -56,16 +56,14 @@
     <div class="main">
         <h3>نمره: <span id="score">0</span></h3>
         <div class="inputs">
-            <b>از عدد</b>
-            <input id="from-num" type="number">
-            <b>تا عدد</b>
-            <input id="to-num" type="number">
+            <b>اضافه کن:</b>
+            <input id="question-text" type="text">
         </div>
         <div id="question">
-            <button onclick="createRandomMultiple(this)">ازم بپرس!!!</button>
+            <button onclick="createRandomQuestion(this)">ازم بپرس!!!</button>
         </div>
         <div id="answer">
-            <input id="answer-input" type="number">
+            <input id="answer-input" type="text">
             <button onclick="checkAnswer()">چک کن!!</button>
         </div>
         <div class="result">
